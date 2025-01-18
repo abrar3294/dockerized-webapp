@@ -13,7 +13,7 @@ function App() {
   // Function to fetch to-dos from the backend
   const fetchTodos = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/todos');
+      const response = await axios.get('http://10.0.0.13:5000/api/todos');
       setTodos(response.data);
     } catch (error) {
       console.error('Error fetching todos:', error);
@@ -24,7 +24,7 @@ function App() {
   const addTodo = async () => {
     if (!task.trim()) return; // Ignore empty input
     try {
-      const response = await axios.post('http://localhost:5000/api/todos', { task });
+      const response = await axios.post('http://10.0.0.13:5000/api/todos', { task });
       setTodos([...todos, response.data]);
       setTask(''); // Clear the input field
     } catch (error) {
@@ -35,7 +35,7 @@ function App() {
   // Function to delete a to-do
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/todos/${id}`);
+      await axios.delete(`http://10.0.0.13:5000/api/todos/${id}`);
       setTodos(todos.filter((todo) => todo._id !== id));
     } catch (error) {
       console.error('Error deleting todo:', error);

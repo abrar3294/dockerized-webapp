@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const todoRoutes = require('./routes/todoRoutes');
+const todoRoutes = require('./routes/todoroutes'); // Match file name
 
 const app = express();
 const PORT = 5000;
@@ -23,4 +23,4 @@ mongoose
 app.use('/api', todoRoutes);
 
 // Start the server
-app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Backend running at http://10.0.0.13:${PORT}`));
