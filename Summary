@@ -6,9 +6,9 @@ docker ps
 
 docker rmi <image> -f 
 
-docker build -t todo-backend /backend
+docker build -t todo-backend ./backend
 
-docker build -t todo-frontend /frontend
+docker build -t todo-frontend ./frontend
 
 docker run -d \
   --name backend \
