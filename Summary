@@ -1,0 +1,27 @@
+Commands:
+
+docker images
+
+docker ps
+
+docker rmi <image> -f 
+
+docker build -t todo-backend ./backend
+
+docker run -d \
+  --name backend \
+  -p 5000:5000 \
+  --env MONGO_URL=mongodb://mongodb:27017/todo \
+  todo-backend
+
+docker run -d \
+  --name frontend \
+  -p 3000:80 \
+  todo-frontend
+
+docker run -d \
+  --name mongodb \
+  -p 27017:27017 \
+  -v mongodb_data:/data/db \
+  mongo:6
+
