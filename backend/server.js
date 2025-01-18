@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const todoRoutes = require('./routes/todoroutes'); // Match file name
+const todoroutes = require('./routes/todoroutes'); // Match file name
 
 const app = express();
 const PORT = 5000;
@@ -12,7 +12,7 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose
-  .connect('mongodb://mongodb:27017/todo', {
+  .connect('mongodb://172.17.0.2:27017/todo', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -20,7 +20,7 @@ mongoose
   .catch((err) => console.error('Failed to connect to MongoDB', err));
 
 // Routes
-app.use('/api', todoRoutes);
+app.use('/api', todoroutes);
 
 // Start the server
 app.listen(PORT, () => console.log(`Backend running at http://10.0.0.13:${PORT}`));
