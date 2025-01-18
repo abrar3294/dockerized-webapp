@@ -1,0 +1,105 @@
+#Frequently used commands:
+
+docker images
+
+docker ps
+
+docker rmi <image> -f 
+
+docker build --no-cache -t todo-backend ./backend
+
+docker build --no-cache -t todo-frontend ./frontend
+
+docker run -d \
+  --name backend \
+  -p 5000:5000 \
+  --env MONGO_URL=mongodb://mongodb:27017/todo \
+  todo-backend
+
+docker run -d \
+  --name frontend \
+  -p 3000:80 \
+  todo-frontend
+
+docker run -d \
+  --name mongodb \
+  -p 27017:27017 \
+  -v mongodb_data:/data/db \
+  mongo:6
+
+docker ps
+
+docker stop mongodb && docker rm mongodb
+
+#Errors
+"For my backend code, server.js file did not reference routes/model properly in terms of file names, ip, etc. So I updated the code and rebuilt the dockerfile. Even though I stopped the container, deleted the image, rebuilt the image, then ran it, running docker logs showed that the references weren't updated.
+Why? Because running docker build still used a cached (previous version) of the image. To do this, once the image is deleted, you need to rebuild the image with the --no-cache option:
+    
+    docker stop <current container>
+    docker rmi <previous image>
+    docker build --no-cache -t todo-backend backend/
+    docker run -d \
+      --name backend \
+      -p 5000:5000 \
+      --env MONGO_URL=mongodb://mongodb:27017/todo \
+      todo-backend
+
+When trying to run docker images, it says 'file name in use by x container'. You check and see there is no container with that name. run docker rm <container> and it will remove the container name, even if you dont see a container with that name.
+Now you can run a docker container with a name you've used before. This is why, when you stop a docker container, it is best practice to remove it right after. i.e:
+  docker stop mongodb
+  docker rm mongodb
+
+
+You inspect logs with 'docker logs backend' and see that the backend cannot connect to mongodb. This could be a DNS issue, a configuration issue, or a network issue. This is how you troubleshoot.
+
+1. Check the server.js file. Is the mongoose.connect reffering to the hostname, port properly? Or is there a syntax error?
+    docker exec -it backend : go inside the container s
+    ping mongodb : if ping is not available, download utilities package. If you cannot ping the hostname (mongodb), try pinging the server IP: 172.17.0.2. If this works, there is a DNS resolution issue but you can get around it
+    by using the ip address in the mongoose.connect section in the server.js file - using the ip will establish connectivity.
+
+2. Networking
+    docker network ls
+      --check networks
+
+    docker inspect network bridge
+      --check if under bridge section, under containers, the backend and mongo containers are there. Are they in the same subnet? Do they have ip addresses? Is the hostname listed properly? The hostname will be the name of the container.
+      --If everything looks in order and you can ping the ip of mongodb, using the ip instead of hostname in server.js should establish connectivity.
+
+    docker network connect bridge backend
+      --puts backend container on 'bridge' network
+    docker network connect bridge mongodb
+      --puts mongodb container on 'bridge' network
+    docker exec -it backend ; ping <mongoIP>
+      --check network connectivity
+
+3. Alternatively, you can try to create new custom network and assign containers to it.
+
+# Step 1: Create a custom Docker network
+docker network create app-network
+
+# Step 2: Start the MongoDB container
+docker run -d \
+  --name mongodb \
+  --network app-network \
+  -p 27017:27017 \
+  mongo:6
+
+# Step 3: Start the backend container
+docker run -d \
+  --name backend \
+  --network app-network \
+  -p 5000:5000 \
+  -e MONGO_URL=mongodb://mongodb:27017/todo \
+  backend
+
+# Step 4: Start the frontend container
+docker run -d \
+  --name frontend \
+  --network app-network \
+  -p 3000:80 \
+  frontend
+
+# Step 5: Verify the network and containers
+docker network inspect app-network
+
+    
